@@ -1,85 +1,86 @@
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { setDoc, doc } from "firebase/firestore";
-import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
-import "../App.css";
-import sideImage from "../assets/sign.png"; // left side image
-import bgImage from "../assets/sigup-bg.jpg"; // background image
+import Swal from "sweetalert2"; // SweetAlert2
+import signupBg from "../assets/sign.png";
 
 function Signup() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
 
-  const signupHandler = async (e) => {
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setError("");
-    const name = e.target.name.value.trim();
-    const email = e.target.email.value.trim();
-    const password = e.target.password.value;
 
-    if (!name || !email || !password) {
-      setError("All fields are required!");
+    if (!form.name || !form.email || !form.password) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please fill all fields",
+        background: "rgba(0,0,0,0.8)",
+        color: "#fff",
+        confirmButtonColor: "#9c27ff",
+      });
       return;
     }
 
-    setLoading(true);
-    try {
-      // 1️⃣ Create user with Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+    // Save user
+    localStorage.setItem("user", JSON.stringify(form));
 
-      // 2️⃣ Save user info to Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        name,
-        email,
-        uid: user.uid,
-        createdAt: new Date(),
-      });
+    // SweetAlert success popup
+    Swal.fire({
+      icon: "success",
+      title: "Signup Successful!",
+      text: "Redirecting to your Resume page...",
+      background: "rgba(0,0,0,0.8)",
+      color: "#fff",
+      confirmButtonColor: "#9c27ff",
+      timer: 2000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
 
-      // 3️⃣ Navigate to ResumeForm after success
-      navigate("/resume-form");
-    } catch (err) {
-      console.error("Signup error:", err);
-      if (err.code === "auth/email-already-in-use") {
-        setError("This email is already registered. Try logging in!");
-      } else if (err.code === "auth/invalid-email") {
-        setError("Invalid email format!");
-      } else if (err.code === "auth/weak-password") {
-        setError("Password should be at least 6 characters!");
-      } else {
-        setError(err.message);
-      }
-    } finally {
-      setLoading(false);
-    }
+    // Redirect after 2 seconds
+    setTimeout(() => navigate("/resume-form"), 2000);
   };
 
   return (
-    <div
-      className="signup-bg"
-      style={{ backgroundImage: `url(${bgImage})` }}
-    >
+    <div className="signup-bg" style={{ backgroundImage: `url(${signupBg})` }} id="signup">
       <div className="signup-overlay">
-        <div className="signup-container">
-          {/* Left side image */}
+        <div className="signup-container" data-aos="flip-down">
+          {/* LEFT IMAGE */}
           <div className="signup-left">
-            <img src={sideImage} alt="Visual" />
+            <img src={signupBg} alt="Signup visual" />
           </div>
 
-          {/* Right side form */}
+          {/* RIGHT FORM */}
           <div className="signup-right">
             <div className="signup-card">
               <h1>Create Account</h1>
-              {error && <p className="signup-error">{error}</p>} {/* show errors */}
-              <form onSubmit={signupHandler}>
-                <input name="name" placeholder="Full Name" required />
-                <input name="email" type="email" placeholder="Email" required />
-                <input name="password" type="password" placeholder="Password" required />
-                <button type="submit" disabled={loading}>
-                  {loading ? "Creating..." : "Signup"}
-                </button>
+
+              <form onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Full Name"
+                  value={form.name}
+                  onChange={handleChange}
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={form.email}
+                  onChange={handleChange}
+                />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={form.password}
+                  onChange={handleChange}
+                />
+                <button type="submit">Create Account</button>
               </form>
             </div>
           </div>

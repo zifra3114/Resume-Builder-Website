@@ -1,9 +1,26 @@
 import React from "react";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
-
+import { useNavigate, useLocation } from "react-router-dom";
 import "../App.css";
 
 function Footer() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Function to handle section scroll
+  const handleScrollTo = (id) => {
+    if (location.pathname !== "/") {
+      // Navigate to Home page with state
+      navigate("/", { state: { scrollTo: id } });
+    } else {
+      // Already on Home page → scroll to section
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -18,10 +35,10 @@ function Footer() {
         <div className="footer-links">
           <h3>Quick Links</h3>
           <ul>
-            <li>Home</li>
-            <li>Templates</li>
-            <li>Features</li>
-            <li>Contact</li>
+            <li onClick={() => handleScrollTo("home")}>Home</li>
+            <li onClick={() => handleScrollTo("templates")}>Templates</li>
+            <li onClick={() => handleScrollTo("features")}>Features</li>
+            <li onClick={() => handleScrollTo("contact")}>Contact</li>
           </ul>
         </div>
 
@@ -29,9 +46,15 @@ function Footer() {
         <div className="footer-social">
           <h3>Follow Us</h3>
           <div className="social-icons">
-            <Facebook className="social-icon" />
-            <Instagram className="social-icon" />
-            <Linkedin className="social-icon" />
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+              <Facebook className="social-icon" />
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+              <Instagram className="social-icon" />
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+              <Linkedin className="social-icon" />
+            </a>
           </div>
         </div>
 

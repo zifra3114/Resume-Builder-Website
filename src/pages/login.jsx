@@ -1,74 +1,122 @@
 import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
-import "../App.css";
-import Robot from "../assets/login.png"; 
-import bgImage from "../assets/sigup-bg.jpg"; // full page background
+import Swal from "sweetalert2";
+import loginBg from "../assets/login.png";
 
 function Login() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [form, setForm] = useState({
+    userEmail: "",
+    userPassword: "",
+  });
 
-  const loginHandler = async (e) => {
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleLogin = (e) => {
     e.preventDefault();
-    setError("");
-    const email = e.target.email.value.trim();
-    const password = e.target.password.value;
 
-    if (!email || !password) {
-      setError("Please enter both email and password.");
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    // Account not found
+    if (!storedUser) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "No account found. Please signup first!",
+        background: "rgba(0,0,0,0.8)",
+        color: "#fff",
+        confirmButtonColor: "#9c27ff",
+      });
       return;
     }
 
-    setLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // ✅ Navigate directly to resume page after login
-      navigate("/resume-form");
-    } catch (err) {
-      console.error("Login error:", err);
-      if (err.code === "auth/user-not-found") {
-        setError("User not found. Please signup first.");
-      } else if (err.code === "auth/wrong-password") {
-        setError("Wrong password.");
-      } else if (err.code === "auth/invalid-email") {
-        setError("Invalid email format!");
-      } else {
-        setError(err.message);
-      }
-    } finally {
-      setLoading(false);
+    // Login success
+    if (
+      form.userEmail === storedUser.email &&
+      form.userPassword === storedUser.password
+    ) {
+      Swal.fire({
+        icon: "success",
+        title: "Login Successful!",
+        text: "Redirecting to Resume page...",
+        background: "rgba(0,0,0,0.8)",
+        color: "#fff",
+        confirmButtonColor: "#9c27ff",
+      }).then(() => {
+        navigate("/resume");
+      });
+    } 
+    // Wrong credentials
+    else {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Credentials",
+        text: "Please check your email and password.",
+        background: "rgba(0,0,0,0.8)",
+        color: "#fff",
+        confirmButtonColor: "#9c27ff",
+      });
     }
   };
 
   return (
     <div
       className="login-bg"
-      style={{ backgroundImage: `url(${bgImage})` }}
+      style={{ backgroundImage: `url(${loginBg})` }}
     >
       <div className="login-overlay">
-        <div className="login-container">
-          {/* Left side form */}
+        <div className="login-container" data-aos="flip-right">
+
+          {/* LEFT IMAGE */}
           <div className="login-left">
+            <img src={loginBg} alt="Login visual" />
+          </div>
+
+          {/* RIGHT FORM */}
+          <div className="login-right">
             <div className="login-card">
-              <h1>Welcome Back</h1>
-              {error && <p className="login-error">{error}</p>} {/* show error */}
-              <form onSubmit={loginHandler}>
-                <input name="email" type="email" placeholder="Email" required />
-                <input name="password" type="password" placeholder="Password" required />
-                <button type="submit" disabled={loading}>
-                  {loading ? "Logging in..." : "Login"}
-                </button>
+              <h1>Login</h1>
+
+              <form onSubmit={handleLogin} autoComplete="off">
+                {/* Hidden autofill blockers */}
+                <input
+                  type="text"
+                  name="fakeusernameremembered"
+                  style={{ display: "none" }}
+                />
+                <input
+                  type="password"
+                  name="fakepasswordremembered"
+                  style={{ display: "none" }}
+                />
+
+                <input
+                  type="email"
+                  name="userEmail"
+                  placeholder="Email"
+                  value={form.userEmail}
+                  onChange={handleChange}
+                  autoComplete="new-email"
+                  required
+                />
+
+                <input
+                  type="password"
+                  name="userPassword"
+                  placeholder="Password"
+                  value={form.userPassword}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  required
+                />
+
+                <button type="submit">Login</button>
               </form>
+
             </div>
           </div>
 
-          {/* Right side image */}
-          <div className="login-right">
-            <img src={Robot} alt="Login Visual" />
-          </div>
         </div>
       </div>
     </div>
