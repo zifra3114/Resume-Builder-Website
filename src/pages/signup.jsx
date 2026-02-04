@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2"; // SweetAlert2
+import Swal from "sweetalert2";
 import signupBg from "../assets/sign.png";
 
 function Signup() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Validation
     if (!form.name || !form.email || !form.password) {
       Swal.fire({
         icon: "error",
@@ -24,30 +26,31 @@ function Signup() {
       return;
     }
 
-    // Save user
+    // Save user in localStorage
     localStorage.setItem("user", JSON.stringify(form));
 
-    // SweetAlert success popup
+    // Success Alert
     Swal.fire({
       icon: "success",
       title: "Signup Successful!",
-      text: "Redirecting to your Resume page...",
+      text: "Redirecting to Resume page...",
       background: "rgba(0,0,0,0.8)",
       color: "#fff",
       confirmButtonColor: "#9c27ff",
-      timer: 2000,
-      timerProgressBar: true,
-      showConfirmButton: false,
+    }).then(() => {
+      navigate("/resume");
     });
-
-    // Redirect after 2 seconds
-    setTimeout(() => navigate("/resume-form"), 2000);
   };
 
   return (
-    <div className="signup-bg" style={{ backgroundImage: `url(${signupBg})` }} id="signup">
+    <div
+      className="signup-bg"
+      style={{ backgroundImage: `url(${signupBg})` }}
+      id="signup"
+    >
       <div className="signup-overlay">
         <div className="signup-container" data-aos="flip-down">
+          
           {/* LEFT IMAGE */}
           <div className="signup-left">
             <img src={signupBg} alt="Signup visual" />
@@ -82,6 +85,7 @@ function Signup() {
                 />
                 <button type="submit">Create Account</button>
               </form>
+
             </div>
           </div>
         </div>
