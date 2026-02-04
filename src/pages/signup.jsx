@@ -13,7 +13,6 @@ function Signup() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validation
     if (!form.name || !form.email || !form.password) {
       Swal.fire({
         icon: "error",
@@ -26,10 +25,8 @@ function Signup() {
       return;
     }
 
-    // Save user in localStorage
     localStorage.setItem("user", JSON.stringify(form));
 
-    // Success Alert
     Swal.fire({
       icon: "success",
       title: "Signup Successful!",
@@ -49,14 +46,11 @@ function Signup() {
       id="signup"
     >
       <div className="signup-overlay">
-        <div className="signup-container" data-aos="flip-down">
-          
-          {/* LEFT IMAGE */}
+        <div className="signup-container">
           <div className="signup-left">
             <img src={signupBg} alt="Signup visual" />
           </div>
 
-          {/* RIGHT FORM */}
           <div className="signup-right">
             <div className="signup-card">
               <h1>Create Account</h1>
