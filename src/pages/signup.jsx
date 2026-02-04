@@ -27,21 +27,28 @@ function Signup() {
     // Save user
     localStorage.setItem("user", JSON.stringify(form));
 
-    // SweetAlert success popup
-    Swal.fire({
-      icon: "success",
-      title: "Signup Successful!",
-      text: "Redirecting to your Resume page...",
-      background: "rgba(0,0,0,0.8)",
-      color: "#fff",
-      confirmButtonColor: "#9c27ff",
-      timer: 2000,
-      timerProgressBar: true,
-      showConfirmButton: false,
-    });
-
-    // Redirect after 2 seconds
-    setTimeout(() => navigate("/resume"), 2000);
+ Swal.fire({
+        icon: "success",
+        title: "Sigup Successful!",
+        text: "Redirecting to Resume page...",
+        background: "rgba(0,0,0,0.8)",
+        color: "#fff",
+        confirmButtonColor: "#9c27ff",
+      }).then(() => {
+        navigate("/resume");
+      });
+    } 
+    // Wrong credentials
+    else {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Credentials",
+        text: "Please Enter correct your email and password.",
+        background: "rgba(0,0,0,0.8)",
+        color: "#fff",
+        confirmButtonColor: "#9c27ff",
+      });
+    }
   };
 
   return (
