@@ -41,7 +41,7 @@ function Signup() {
     });
 
     // Redirect after 2 seconds
-    setTimeout(() => navigate("/resume-form"), 2000);
+    setTimeout(() => navigate("/resume"), 2000);
   };
 
   return (
